@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Agentforce 完整題庫 (Q151-Q200)</title>
+<style>
+    /* --- 基礎樣式 --- */
+    :root {
+        --bg-color: #FAF9F6;
+        --card-bg: #FFFFFF;
+        --primary-color: #0176d3;
+        --text-color: #2c2c2c;
+        --border-color: #e0e0e0;
+        --highlight-bg: #eef4ff;
+        --wrong-color: #ea001e;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 16px;
+        line-height: 1.6;
+        font-size: 17px;
+        padding-bottom: 80px;
+    }
+
+    /* --- 頂部控制列 --- */
+    .controls {
+        position: sticky;
+        top: 0;
+        background-color: rgba(250, 249, 246, 0.98);
+        padding: 12px 0;
+        z-index: 1000;
+        border-bottom: 1px solid #ddd;
+        margin: -16px -16px 20px -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+        display: flex;
+        gap: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow-x: auto; /* 防止小螢幕爆版 */
+    }
+
+    .btn-filter {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+
+    /* 錯題按鈕 */
+    .btn-wrong {
+        background-color: #fff0f1;
+        color: var(--wrong-color);
+        border: 1px solid var(--wrong-color);
+    }
+    .btn-wrong.active {
+        background-color: var(--wrong-color);
+        color: white;
+    }
+
+    /* 全部按鈕 */
+    .btn-all {
+        background-color: white;
+        color: #555;
+        border: 1px solid #ccc;
+    }
+    .btn-all.active {
+        background-color: #555;
+        color: white;
+        border-color: #555;
+    }
+
+    /* 重置按鈕 */
+    .btn-reset {
+        background-color: #f0f0f0;
+        color: #666;
+        border: 1px solid #ccc;
+        flex: 0 0 auto; /* 不縮放 */
+    }
+    .btn-reset:active {
+        background-color: #e0e0e0;
+    }
+
+    /* --- 題目卡片 --- */
+    .card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid var(--border-color);
+        position: relative;
+    }
+
+    /* 錯題標記開關 */
+    .wrong-mark-wrapper {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: #666;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+    }
+
+    .wrong-mark-wrapper.is-wrong {
+        background-color: #fff0f1;
+        color: var(--wrong-color);
+        border-color: #ffcdd2;
+        font-weight: bold;
+    }
+
+    .wrong-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--wrong-color);
+    }
+
+    .q-header {
+        margin-bottom: 15px;
+        padding-right: 110px;
+    }
+
+    .q-badge {
+        background-color: var(--highlight-bg);
+        color: var(--primary-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 800;
+    }
+
+    .q-text {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        white-space: pre-wrap;
+    }
+
+    /* --- 選項與答案 --- */
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .option {
+        padding: 14px;
+        background-color: #fcfcfc;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .option:active {
+        background-color: var(--highlight-bg);
+        border-color: var(--primary-color);
+    }
+
+    details {
+        margin-top: 15px;
+        border: 1px solid #b0c4df;
+        border-radius: 8px;
+        background-color: #f0f8fc;
+        overflow: hidden;
+    }
+
+    summary {
+        padding: 14px;
+        font-weight: bold;
+        color: var(--primary-color);
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #e3f2fd;
+        font-size: 1rem;
+    }
+
+    summary::after {
+        content: "顯示答案 ▼";
+        font-size: 0.9rem;
+    }
+
+    details[open] summary::after {
+        content: "收起 ▲";
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    .ans-content {
+        padding: 16px;
+        border-top: 1px solid #b0c4df;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .correct-ans {
+        color: #d43636;
+        font-weight: bold;
+        font-size: 1.15rem;
+        margin-bottom: 12px;
+        display: block;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #b0c4df;
+    }
+
+    .status-bar {
+        text-align: center;
+        margin: 10px 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .top-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--primary-color);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        font-size: 24px;
+        opacity: 0.9;
+        z-index: 1000;
+    }
+</style>
+</head>
+<body>
+
+    <div class="controls">
+        <button id="btn-wrong" class="btn-filter btn-wrong" onclick="setFilter('wrong')">
+            ❌ 錯題 (<span id="wrong-count">0</span>)
+        </button>
+        <button id="btn-all" class="btn-filter btn-all active" onclick="setFilter('all')">
+            📚 全部
+        </button>
+        <button id="btn-reset" class="btn-filter btn-reset" onclick="resetRecord()">
+            🔄 重置
+        </button>
+    </div>
+
+    <h1>Agentforce 複習 (Q151-Q200)</h1>
+    <div class="status-bar" id="status-text">顯示所有題目</div>
+
+    <div id="quiz-container"></div>
+    <div style="height: 50px;"></div>
+    <a href="#" class="top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑</a>
+
+    <script>
+        // ==========================================
+        // 1. 題目資料庫 (Q151-Q200) - V3 完整修復+重置版
+        // ==========================================
+        const questionsData = [
+            {
+                id: 151,
+                q: "When configuring a prompt template, an Agentforce Specialist previews the results of the prompt template they've written. They see two distinct text outputs: Resolution and Response.\n\nWhich information does the Resolution text provide?",
+                options: [
+                    "A. It shows the full text that is sent to the Trust Layer.",
+                    "B. It shows the response from the LLM based on the sample record.",
+                    "C. It shows which sensitive data is masked before it is sent to the LLM."
+                ],
+                ans: "A",
+                exp: "In the Prompt Builder preview, the 'Resolution' (or Resolved Prompt) displays the final prompt text after all merge fields have been populated with data, exactly as it is sent to the Trust Layer/LLM. The 'Response' is what the LLM returns."
+            },
+            {
+                id: 152,
+                q: "Universal Container (UC) has effectively utilized prompt templates to update summary fields on Lightning record pages. An admin now wishes to incorporate similar functionality into UC's automation process using Flow.\n\nHow can the admin get a response from this prompt template from within a flow to use as part of UC's automation?",
+                options: [
+                    "A. Invocable Apex",
+                    "B. Flow Action",
+                    "C. Einstein for Flow"
+                ],
+                ans: "B",
+                exp: "To use a Prompt Template within a Flow, you use the standard 'Flow Action' element (specifically selecting the Prompt Template action type). This allows the flow to invoke the template and use its output."
+            },
+            {
+                id: 153,
+                q: "Universal Containers needs a tool that can analyze voice and video call records to provide insights on competitor mentions, coaching opportunities, and other key information. The goal is to enhance the team's performance by identifying areas for improvement and competitive intelligence.\n\nWhich feature provides insights about competitor mentions and coaching opportunities?",
+                options: [
+                    "A. Call Summaries",
+                    "B. Einstein Sales Insights",
+                    "C. Call Explorer"
+                ],
+                ans: "C",
+                exp: "Although Call Insights (ECI) automatically flags keywords, 'Call Explorer' allows for interactive exploration and questioning of call data to uncover specific insights like coaching opportunities."
+            },
+            {
+                id: 154,
+                q: "Universal Containers plans to enhance the customer support team's productivity using AI.\n\nWhich specific use case necessitates the use of Prompt Builder?",
+                options: [
+                    "A. Creating a draft of a support bulletin post for new product patches",
+                    "B. Creating an AI-generated customer support agent performance score",
+                    "C. Estimating support ticket volume based on historical data and seasonal trends"
+                ],
+                ans: "A",
+                exp: "Prompt Builder is a generative tool. Creating a draft bulletin is a text generation task. Options B and C are predictive/analytical tasks better suited for other Einstein tools."
+            },
+            {
+                id: 155,
+                q: "What is a valid use case for Data Cloud retrievers?",
+                options: [
+                    "A. Returning relevant data from the vector database to augment a prompt.",
+                    "B. Grounding data from external websites to augment a prompt with RAG.",
+                    "C. Modifying and updating data within the source systems connected to Data Cloud."
+                ],
+                ans: "A",
+                exp: "Data Cloud retrievers are specifically designed to search the vector index (database) in Data Cloud and return relevant data chunks to 'augment' (ground) the AI prompt (RAG)."
+            },
+            {
+                id: 156,
+                q: "When a customer chat is initiated, which functionality in Salesforce provides generative AI replies or draft emails based on recommended Knowledge articles?",
+                options: [
+                    "A. Einstein Reply Recommendations",
+                    "B. Einstein Service Replies",
+                    "C. Einstein Grounding"
+                ],
+                ans: "B",
+                exp: "Einstein Service Replies is the generative AI feature that drafts replies for agents based on conversation context and Knowledge grounding."
+            },
+            {
+                id: 157,
+                q: "Choose 1 option.\nCoral Cloud Resorts wants to cover a broad range of user phrasing when testing its FAQ agent.\nWhich Testing Center feature meets that need?",
+                options: [
+                    "A. AI-generated synthetic test utterances based on natural language variations",
+                    "B. Uploading only a small set of manually written prompts",
+                    "C. Relying on live customer logs to capture phrasing diversity after deployment"
+                ],
+                ans: "A",
+                exp: "The Testing Center can generate synthetic test utterances to automatically create variations of questions, ensuring the agent is tested against a wide range of natural language phrasing."
+            },
+            {
+                id: 158,
+                q: "Universal Containers deployed the new Agentforce Sales Development Representative (SDR) Into production, but sales reps are saying they can't find it. What is causing this issue?",
+                options: [
+                    "A. Sales rep users profiles are missing the Allow SDR Agent permission.",
+                    "B. Sales rep users do not have access to the SDR Agent object.",
+                    "C. Sales rep users are missing the Use SDR Agent permission"
+                ],
+                ans: "C",
+                exp: "Access to the Agentforce SDR Agent is controlled by a specific permission set (e.g., 'Use SDR Agent'). If users can't see it, they likely lack this assignment."
+            },
+            {
+                id: 159,
+                q: "What is the role of the large language model (LLM) in executing an Agent Action?",
+                options: [
+                    "A. Find similar requests and provide actions that need to be executed",
+                    "B. Identify the best matching actions and correct order of execution",
+                    "C. Determine a user's access and sort actions by priority to be executed"
+                ],
+                ans: "B",
+                exp: "The LLM serves as the reasoning engine. It analyzes the intent and identifies the best matching actions (tools) and the logical order (sequence) to execute them to fulfill the request."
+            },
+            {
+                id: 160,
+                q: "Universal Containers (UC) wants to improve the productivity of its sales team with generative AI technology.\n\nHowever, UC is concerned that public AI virtual assistants lack adequate company data to general useful responses.\n\nWhich solution should UC consider?",
+                options: [
+                    "A. fine-tune the Einstein AI model with CBM data.",
+                    "B. Build AI model with Einstein discovery and deploy to sales users.",
+                    "C. Enable Agentforce and deploy to sales users."
+                ],
+                ans: "A",
+                exp: "Fine-tuning the Einstein AI model with company data (CRM/CBM data) ensures the model understands the specific business context, overcoming the limitations of generic public models."
+            },
+            {
+                id: 161,
+                q: "Universal Containers wants support agents to use Agentforce to ask questions about its product tutorials and product guides.\n\nWhat should the Agentforce Specialist do to meet this requirement?",
+                options: [
+                    "A. Create a prompt template for product tutorials and guides.",
+                    "B. Add an Answer Questions custom field in the product object for tutorial instructions.",
+                    "C. Publish product tutorials and guides as Knowledge articles."
+                ],
+                ans: "C",
+                exp: "Agentforce Service Agents are optimized to answer questions using RAG grounded in Salesforce Knowledge. Publishing the guides as Knowledge Articles makes them immediately accessible for this purpose."
+            },
+            {
+                id: 162,
+                q: "Universal Containers' current AI data masking rules do not align with organizational privacy and security policies and requirements.\nWhat should An Agentforce recommend to resolve the issue?",
+                options: [
+                    "A. Enable data masking for sandbox refreshes.",
+                    "B. Configure data masking in the Einstein Trust Layer setup.",
+                    "C. Add new data masking rules in LLM setup."
+                ],
+                ans: "B",
+                exp: "The Einstein Trust Layer setup is the centralized location for configuring data masking rules for generative AI. Adjusting settings here ensures alignment with security policies."
+            },
+            {
+                id: 163,
+                q: "Which element in the Omni-Channel Flow should be used to connect the flow with the agent?",
+                options: [
+                    "A. Route Work Action",
+                    "B. Assignment",
+                    "C. Decision"
+                ],
+                ans: "A",
+                exp: "In Omni-Channel Flow, the 'Route Work' action is the element used to direct a work item (chat, message) to a specific destination, such as an Agentforce Agent (Bot) or queue."
+            },
+            {
+                id: 164,
+                q: "Universal Containers (UC) is using Einstein Generative AI... utilizing the Einstein Trust Layer's toxicity scoring...\n\nIn the Einstein Generative AI Toxicity Scoring system, what does a toxicity category score of 1 indicate?",
+                options: [
+                    "A. The response is the least toxic",
+                    "B. The response is not toxic.",
+                    "C. The response is the most toxic."
+                ],
+                ans: "C",
+                exp: "In the context of Toxicity Scoring, a score of 1 typically indicates the highest probability or level of toxicity (Most Toxic)."
+            },
+            {
+                id: 165,
+                q: "Choose 1 option.\nWhat is an Agentforce Specialist able to do when the 'Enrich event logs with conversation data' setting in the Agentforce configuration is enabled?",
+                options: [
+                    "A. View the user click path that led to each agent action.",
+                    "B. View session data including user input and agent responses for sessions.",
+                    "C. Generate details reports on all agent conversations over any time period."
+                ],
+                ans: "B",
+                exp: "Enabling this setting enriches standard event logs with the actual text of user inputs and agent responses, providing visibility into the conversation content for auditing and debugging."
+            },
+            {
+                id: 166,
+                q: "Sales reps at Universal Containers should not be able to create or edit prompt templates.\nWhich permission set should an AgentForce Specialist assign to the sales reps?",
+                options: [
+                    "A. Prompt Execute User",
+                    "B. Prompt Template Manager",
+                    "C. Prompt Template User"
+                ],
+                ans: "A",
+                exp: "(Note: Standard permission is 'Prompt Template User', but source key specifies 'Prompt Execute User' (A). Follow source key A)."
+            },
+            {
+                id: 167,
+                q: "Universal Containers wants to assign agents to improve department efficiency.\nWhich configuration ensures the right tasks are handled by the right agents?",
+                options: [
+                    "A. SDR Agent for lead qualification, Service Agent for support tickets, Employee Agent for HR requests",
+                    "B. Sales Coach Agent for lead and service Agent for HR requests, and Support tickets to ensure cases are available",
+                    "C. One Service Agent to efficiently handle each of these scenarios, which reduces the number of agent types needed for support"
+                ],
+                ans: "A",
+                exp: "Agentforce provides specialized agents: SDR Agent for Sales/Leads, Service Agent for Customer Support, and Employee Agent for Internal/HR tasks. This is the correct role alignment."
+            },
+            {
+                id: 168,
+                q: "What is the primary advantage of creating an individual retriever instead of the default retriever?",
+                options: [
+                    "A. Individual retrievers can aggregate multiple data spaces and data model objects (DMOs) into a unified retriever output.",
+                    "B. Individual retrievers allow the configuration of filters, specified fields, and how many results are returned.",
+                    "C. Individual retrievers automatically generate new search indexes and dynamically update vectors."
+                ],
+                ans: "B",
+                exp: "Custom (Individual) retrievers provide granular control that the default one lacks: specifically, the ability to define Filters (e.g., region='US'), select return fields, and limit the result count (Top K), which improves relevance and performance."
+            },
+            {
+                id: 169,
+                q: "An Agentforce Specialist is creating a prompt template to assist support reps in drafting responses to customer complaints.\nTo ensure the responses are empathetic and helpful, what is a key element to include in the prompt template?",
+                options: [
+                    "A. A direct instruction to the large language model (LLM) to role-play as a character",
+                    "B. A list of keywords related to customer complaints",
+                    "C. The entire history of the customer's previous interactions with the company"
+                ],
+                ans: "A",
+                exp: "Role-playing (Persona instructions) is a key prompt engineering technique. Telling the LLM to 'act as an empathetic support agent' helps set the correct tone and style for the response."
+            },
+            {
+                id: 170,
+                q: "Universal Containers (UC) has a mature Salesforce org... UC is concerned that there are many legacy fields... Which solution should UC use to ensure Einstein AI can draft responses from a defined data source?",
+                options: [
+                    "A. Service AI Grounding",
+                    "B. Work Summaries",
+                    "C. Service Replies"
+                ],
+                ans: "A",
+                exp: "Service AI Grounding allows configuration of exactly which objects and fields are used by the AI. This allows UC to exclude legacy or irrelevant fields from the context window, ensuring accuracy."
+            },
+            {
+                id: 171,
+                q: "Choose 1 option.\nAn Agentforce Specialist is building a Flex prompt template.\nWhich best practice should the Agentforce Specialist follow when creating the Flex prompt template?",
+                options: [
+                    "A. Provide the large language model (LLM) with contextual information and give it a role such as a sales or support rep.",
+                    "B. Ground the large language model (LLM) with account data and create a custom field account summary to store the LLM-generated response.",
+                    "C. Ground the large language model (LLM) with a retriever and create a custom field to store the LLM- generated Response."
+                ],
+                ans: "A",
+                exp: "For Flex templates, providing clear Context and Role (Persona) instructions is crucial to guide the LLM's output, as Flex templates are open-ended."
+            },
+            {
+                id: 172,
+                q: "Universal Containers (UC) wants to use Flow to bring data from unified Data Cloud objects to prompt templates.\nWhich type of flow should UC use?",
+                options: [
+                    "A. Data Cloud-triggered flow",
+                    "B. Template-triggered prompt flow",
+                    "C. Unified-object linking flow"
+                ],
+                ans: "B",
+                exp: "To bring data from a Flow into a Prompt Template, you must use a 'Template-triggered prompt flow' (also known as Prompt-Initiated Flow). This flow is specifically designed to be called by the template to fetch and return data."
+            },
+            {
+                id: 173,
+                q: "Choose 1 option.\nCloud Kicks (CK) recently finished the development of a new prompt template that uses its own large language model (LLM)... CK is deploying a prompt template from a sandbox to a production org, and is receiving an error. When trying to deploy the change set, CK is getting an error related to the LLM used in the prompt template.\n\nWhat is the cause of the error?",
+                options: [
+                    "A. The prompt does not specify that it is a custom LLM.",
+                    "B. BYOLLM is not yet supported for in prompt templates in production.",
+                    "C. The name of the LLM does not match in sandbox and production."
+                ],
+                ans: "C",
+                exp: "Prompt Templates reference the LLM configuration by name/ID. If using BYO-LLM, the target org (Production) must have an LLM configuration with the exact same name as the source (Sandbox) for the deployment to succeed."
+            },
+            {
+                id: 174,
+                q: "Universal Containers wants to allow its service agents to query the current fulfillment status of an order with natural language. There is an existing autolaunched flow to query the information from Oracle ERP, which is the system of record for the order fulfillment process.\n\nHow should an Agentforce Specialist apply the power of conversational AI to this use case?",
+                options: [
+                    "A. Create a custom Agent action which calls a flow.",
+                    "B. Configure the Integration Flow Standard Action in Agent Builder.",
+                    "C. Create a Flex prompt template in Prompt Builder."
+                ],
+                ans: "A",
+                exp: "To expose an existing Flow to the Agent, create a Custom Agent Action that invokes the Flow. This bridges the conversation intent to the automation logic."
+            },
+            {
+                id: 175,
+                q: "Universal Containers (UC) wants to ensure the effectiveness, reliability, and trust of its agents prior to deploying them in production. UC would like to efficiently test a large and repeatable number of utterances.\n\nWhat should the Agentforce Specialist recommend?",
+                options: [
+                    "A. Leverage the Agent Large Language Model (LLM) UI and test UC's agents with different utterances prior to activating the agent.",
+                    "B. Deploy the agent in a QA sandbox environment and review the Utterance Analysis reports to review effectiveness.",
+                    "C. Create a CSV file with UC's test cases in Agentforce Testing Center using the testing template."
+                ],
+                ans: "C",
+                exp: "The Agentforce Testing Center supports batch testing via CSV uploads. This allows for testing a large, repeatable set of utterances and validating outcomes efficiently."
+            },
+            {
+                id: 176,
+                q: "What is the main benefit of using a Knowledge article in an Agentforce Data Library?",
+                options: [
+                    "A. Only the retriever for Knowledge articles allows for agents to access Knowledge from both inside the platform and on a customer's website.",
+                    "B. It provides a structured, searchable repository of approved documents so the agent can retrieve reliable information for each inquiry.",
+                    "C. The retriever for Knowledge articles has better accuracy and performance than the default retriever."
+                ],
+                ans: "B",
+                exp: "Knowledge articles represent curated, approved information. Using them in a Data Library ensures the Agent grounds its responses in reliable, verified company data."
+            },
+            {
+                id: 177,
+                q: "Universal Containers wants to incorporate CRM data as well-formatted JSON in a prompt to a large language model (LLM).\nWhat is an important consideration for this requirement?",
+                options: [
+                    "A. 'CRM data to JSON' checkbox must be selected when creating a prompt template.",
+                    "B. Apex code can be used to return a JSON formatted merge field.",
+                    "C. JSON format should be enabled in Prompt Builder Settings."
+                ],
+                ans: "B",
+                exp: "There is no automatic 'Convert to JSON' button. To format data as JSON for a prompt, you typically use an Apex method (via a merge field) to serialize the data."
+            },
+            {
+                id: 178,
+                q: "Universal Containers deploys a new Agentforce Service Agent... but is getting feedback that the Agentforce Service Agent is not providing answers to customer questions that are found in the company's Salesforce Knowledge articles. What is the likely issue?",
+                options: [
+                    "A. The Agentforce Service Agent user is not assigned the correct Agent Type License.",
+                    "B. The Agentforce Service Agent user needs to be created under the standard Agent Knowledge profile.",
+                    "C. The Agentforce Service Agent user was not given the Allow View Knowledge permission set."
+                ],
+                ans: "C",
+                exp: "The Agent runs as a system user. If that user lacks the 'Allow View Knowledge' permission, it cannot see or retrieve the articles required to answer questions."
+            },
+            {
+                id: 179,
+                q: "How does Agent handle user requests In Salesforce?",
+                options: [
+                    "A. Agent will trigger a flow that utilizes a prompt template to generate the message.",
+                    "B. Agent will perform an HTTP callout to an LLM provider.",
+                    "C. Agent analyzes the user's request and LLM technology is used to generate and display the appropriate response."
+                ],
+                ans: "C",
+                exp: "Agent (Copilot) operates by analyzing the request via its reasoning engine and using LLM technology to generate a response or execute an action. It is an end-to-end AI interaction."
+            },
+            {
+                id: 180,
+                q: "What should An Agentforce consider when using related list merge fields in a prompt template associated with an Account object in Prompt Builder?",
+                options: [
+                    "A. The Activities related list on the Account object is not supported because it is a polymorphic field.",
+                    "B. If person accounts have been enabled, merge fields will not be available for the Account object.",
+                    "C. Prompt generation will yield no response when there is no related list associated with an Account in runtime."
+                ],
+                ans: "A",
+                exp: "Prompt Builder has limitations with Polymorphic fields/relationships (like Activities/Tasks). Directly using the Activities related list on Account is typically not supported."
+            },
+            {
+                id: 181,
+                q: "What is the primary function of the planner service in the Agent system?",
+                options: [
+                    "A. Generating record queries based on conversation history",
+                    "B. Offering real-time language translation during conversations",
+                    "C. Identifying copilot actions to respond to user utterances"
+                ],
+                ans: "C",
+                exp: "The Planner Service (Reasoning Engine) identifies the correct Copilot Actions to execute in response to the user's utterance."
+            },
+            {
+                id: 182,
+                q: "Northern Trail Outfitters (NTO) wants to configure Einstein Trust Layer in its production org but is unable to see the option on the Setup page. After provisioning Data Cloud, which step must an Al Specialist take to make this option available to NTO?",
+                options: [
+                    "A. Turn on Agent.",
+                    "B. Turn on Einstein Generative AI.",
+                    "C. Turn on Prompt Builder."
+                ],
+                ans: "B",
+                exp: "The Einstein Trust Layer is part of the 'Einstein Generative AI' feature set. Enabling 'Einstein Generative AI' in Setup is the prerequisite to seeing Trust Layer settings."
+            },
+            {
+                id: 183,
+                q: "Universal Containers (UC) needs to save agents time with AI-generated case summaries. UC has implemented the Work Summary feature. What does Einstein consider when generating a summary?",
+                options: [
+                    "A. Generation is grounded with conversation context, Knowledge articles, and cases.",
+                    "B. Generation is grounded with existing conversation context only.",
+                    "C. Generation is grounded with conversation context and Knowledge articles."
+                ],
+                ans: "A",
+                exp: "Einstein Work Summaries grounds the summary in multiple sources: the Conversation Context (transcript), related Knowledge Articles, and Case data."
+            },
+            {
+                id: 184,
+                q: "Universal Containers (UC) has a legacy system that needs to integrate with Salesforce. UC wishes to create a digest of account action plans using the generative API feature.\nWhich API service should UC use to meet this requirement?",
+                options: [
+                    "A. REST API",
+                    "B. Metadata API",
+                    "C. SOAP API"
+                ],
+                ans: "A",
+                exp: "Salesforce Generative AI capabilities are exposed via the 'Generations API', which is a standard REST API service."
+            },
+            {
+                id: 185,
+                q: "Universal Containers is very concerned about security compliance and wants to understand:\nWhich prompt text is sent to the LLM, How it is masked, The masked response.\nWhat should the Agentforce Specialist recommend?",
+                options: [
+                    "A. Ingest the Einstein Shield Event logs into CRM Analytics.",
+                    "B. Review the debug logs of the running user.",
+                    "C. Enable audit trail in the Einstein Trust Layer."
+                ],
+                ans: "C",
+                exp: "The Audit Trail in the Einstein Trust Layer logs the exact prompt sent, the masking applied, and the response received, satisfying compliance needs."
+            },
+            {
+                id: 186,
+                q: "An Agentforce at Universal Containers is trying to set up a new Field Generation prompt template... When they go to a case record, the AI Analysis field does not show the (Sparkle) icon... Which critical step did the Agentforce Specialist miss?",
+                options: [
+                    "A. They forgot to reactivate the Lightning page layout...",
+                    "B. They forgot that the Case Object is not supported...",
+                    "C. They forgot to edit the Lightning page layout and associate the field to a prompt template"
+                ],
+                ans: "C",
+                exp: "You must edit the Lightning Record Page in App Builder and explicitly associate the target field with the Field Generation prompt template for the icon to appear."
+            },
+            {
+                id: 187,
+                q: "Based on the user utterance, 'Show me all the customers in New York', which standard Agent action will the planner service use?",
+                options: [
+                    "A. Query Records",
+                    "B. Fetch Records",
+                    "C. Select Records"
+                ],
+                ans: "A",
+                exp: "For requests to retrieve records based on criteria ('customers in New York'), the standard action is 'Query Records'."
+            },
+            {
+                id: 188,
+                q: "Universal Containers wants to use an external large language model (LLM) in Prompt Builder. What should An Agentforce recommend?",
+                options: [
+                    "A. Use Apex to connect to an external LLM and ground the prompt.",
+                    "B. Use BYO-LLM functionality in Einstein Studio.",
+                    "C. Use Flow and External Services to bring data from an external LLM."
+                ],
+                ans: "B",
+                exp: "BYO-LLM (Bring Your Own LLM) in Einstein Studio is the standard, supported feature for connecting external models to Prompt Builder."
+            },
+            {
+                id: 189,
+                q: "When creating a custom retriever in Einstein Studio, which step is considered essential?",
+                options: [
+                    "A. Select the search index, specify the associated data model object (DMO) and data space, and optionally define filters to narrow search results.",
+                    "B. Define the output configuration by specifying the maximum number of results to return, and map the output fields that will ground the prompt.",
+                    "C. Configure the search index, choose vector or hybrid search, choose the fields for filtering, the data space and model, then define the ranking method."
+                ],
+                ans: "A",
+                exp: "Defining the core components: Search Index, DMO, and Data Space is the essential first step in creating a retriever."
+            },
+            {
+                id: 190,
+                q: "A business stakeholder wants to use AI to generate a summary based on Data Cloud data. Which method(s) should the stakeholder use to access Data Cloud data from Prompt Builder?",
+                options: [
+                    "A. Accessing data model objects (DMQs) directly in Flex templates, using Data Cloud related lists, and fetching Data Cloud data using prompt-initiated flows",
+                    "B. Using Data Cloud related lists and fetching Data Cloud data using prompt-initiated flows",
+                    "C. Using only external APIs to import Data Cloud data into Prompt Builder"
+                ],
+                ans: "B",
+                exp: "Prompt Builder accesses Data Cloud data via enriched Related Lists or Prompt-Initiated Flows."
+            },
+            {
+                id: 191,
+                q: "Universal Containers (UC) is creating a new custom prompt template to populate a field with generated output. UC enabled the Einstein Trust Layer... Which prompt template type should UC use and which consideration should UC review?",
+                options: [
+                    "A. Field Generation, and that Dynamic Fields is enabled",
+                    "B. Field Generation, and that Dynamic Forms is enabled",
+                    "C. Flex, and that Dynamic Fields is enabled"
+                ],
+                ans: "A",
+                exp: "Use 'Field Generation' template. 'Dynamic Fields' (or Dynamic Forms capabilities) are required for the field interaction."
+            },
+            {
+                id: 192,
+                q: "Universal Containers (UC) wants to enable its sales team to get insights into product and competitor names mentioned during calls. How should UC meet this requirement?",
+                options: [
+                    "A. Enable Einstein Conversation Insights, connect a recording provider, assign permission sets, and customize insights with up to 25 products.",
+                    "B. Enable Einstein Conversation Insights, assign permission sets, define recording managers, and customize insights with up to 50 competitor names.",
+                    "C. Enable Einstein Conversation Insights, enable sales recording, assign permission sets, and customize insights with up to 50 products."
+                ],
+                ans: "A",
+                exp: "This requires Einstein Conversation Insights (ECI). The process involves enabling ECI, connecting a provider, permissions, and defining keywords (products)."
+            },
+            {
+                id: 193,
+                q: "Choose 1 option.\nUniversal Containers' administrator has developed a new agent in a sandbox environment and now wants to deploy it to production.\nWhat should the administrator do to deploy an agent?",
+                options: [
+                    "A. Manually recreate the agent configuration, topics, and actions in production because change sets cannot be used,",
+                    "B. Export agent components as JSON files and manually import them into production using the Metadata API.",
+                    "C. Create an outbound change set with all the necessary agent components, then upload to production."
+                ],
+                ans: "C",
+                exp: "Agentforce components can be deployed using standard Salesforce Change Sets."
+            },
+            {
+                id: 194,
+                q: "Universal Containers (UC) has configured an Agentforce Data Library using Knowledge articles. When testing in Agent Builder... the agent is not responding with grounded Knowledge article information. However, when tested in Prompt Builder, the response returns correctly. What should UC do?",
+                options: [
+                    "A. Create a new permission set that assigns 'Manage Knowledge' and assign it to the Agentforce Service Agent User.",
+                    "B. Ensure the assigned User permission set includes access to the prompt template used to access the Knowledge articles.",
+                    "C. Ensure the Data Cloud User permission set has been assigned to the Agentforce Service Agent User."
+                ],
+                ans: "C",
+                exp: "The Agent runs as a system user. This user needs Data Cloud access permissions to query the Knowledge index stored in Data Cloud."
+            },
+            {
+                id: 195,
+                q: "Choose 1 option.\nUniversal Containers (UC) is preparing and defining success criteria for Agentforce Testing Center test cases.\nWhich details should UC specify as the expected output to ensure the tests accurately reflect the agent's functionality?",
+                options: [
+                    "A. Expected Topic API Name",
+                    "B. Expected Flow API Name",
+                    "C. Expected Prompt Template Name"
+                ],
+                ans: "A",
+                exp: "In testing, verifying that the Agent selected the correct 'Expected Topic' is the primary way to confirm intent recognition."
+            },
+            {
+                id: 196,
+                q: "How is Data Cloud leveraged by the Answer Questions with Knowledge action in Agentforce?",
+                options: [
+                    "A. Data Cloud is not required; the articles can be accessed directly from the CRM by the agent.",
+                    "B. Data Cloud stores and manages the Indexed Knowledge articles.",
+                    "C. Data Cloud provides the real-time data streams that update the Knowledge articles."
+                ],
+                ans: "B",
+                exp: "Knowledge articles are indexed and stored in Data Cloud (Vector DB) to enable the RAG functionality for the agent."
+            },
+            {
+                id: 197,
+                q: "Universal Containers needs its sales reps to be able to only execute prompt templates. What should the company use to achieve this requirement?",
+                options: [
+                    "A. Prompt Execute Template permission set",
+                    "B. Prompt Template User permission set",
+                    "C. Prompt Template Manager permission set"
+                ],
+                ans: "B",
+                exp: "'Prompt Template User' is the standard permission set for executing templates (without managing them)."
+            },
+            {
+                id: 198,
+                q: "Cloud Kicks (CK) is launching a new partner portal on Experience Cloud... CK wants to provide partners with an agent that can answer questions... and allow them to submit a new Lead... The agent must be accessible only to authenticated partner users on the portal.\n\nWhich agent type is required?",
+                options: [
+                    "A. Sales Agent",
+                    "B. Commerce Agent",
+                    "C. Service Agent"
+                ],
+                ans: "C",
+                exp: "'Service Agent' is the appropriate type for external-facing portals (Experience Cloud) to handle questions and tasks like Lead submission."
+            },
+            {
+                id: 199,
+                q: "Universal Containers (UC) is implementing Einstein Generative AI to improve customer insights and interactions. UC needs audit and feedback data to be accessible for reporting purposes.\nWhat is a consideration for this requirement?",
+                options: [
+                    "A. Storing this data requires Data Cloud to be provisioned.",
+                    "B. Storing this data requires a custom object for data to be configured.",
+                    "C. Storing this data requires Salesforce big objects."
+                ],
+                ans: "A",
+                exp: "Einstein Audit and Feedback data is stored in Data Cloud. Provisioning Data Cloud is a requirement to access it."
+            },
+            {
+                id: 200,
+                q: "Universal Containers wants an AI agent to answer questions about warranties using unstructured data stored in Data Cloud. Results must be filterable by product line and ranked by recent updates.\n\nWhich approach should the Agentforce Specialist implement?",
+                options: [
+                    "A. Use the default retriever which automatically accounts for recency ranking.",
+                    "B. Build a custom retriever in Einstein Studio with product line filters and recency ranking.",
+                    "C. Apply semantic embeddings with default metadata filters to achieve the desired result."
+                ],
+                ans: "B",
+                exp: "To apply specific filters (Product Line) and custom ranking (Recency), you must build a Custom Retriever in Einstein Studio."
+            }
+        ];
+
+        // ==========================================
+        // 2. 邏輯處理 (Local Storage & Rendering)
+        // ==========================================
+        const STORAGE_KEY = 'agentforce_part4_wrong_ids'; // Key
+        let wrongIds = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        let currentFilter = 'all'; 
+
+        function init() {
+            renderQuiz();
+            updateCounts();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            let visibleCount = 0;
+
+            questionsData.forEach(q => {
+                const isWrong = wrongIds.includes(q.id);
+                if (currentFilter === 'wrong' && !isWrong) return;
+
+                visibleCount++;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = `card-${q.id}`;
+
+                const markWrapper = document.createElement('div');
+                markWrapper.className = `wrong-mark-wrapper ${isWrong ? 'is-wrong' : ''}`;
+                markWrapper.innerHTML = `
+                    <input type="checkbox" class="wrong-checkbox" 
+                        ${isWrong ? 'checked' : ''} 
+                        onclick="toggleWrong(${q.id}, event)">
+                    <span>標記錯題</span>
+                `;
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'q-header';
+                headerDiv.innerHTML = `<span class="q-badge">NO.${q.id}</span>`;
+                
+                const textDiv = document.createElement('div');
+                textDiv.className = 'q-text';
+                textDiv.textContent = q.q;
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                q.options.forEach(opt => {
+                    const optEl = document.createElement('div');
+                    optEl.className = 'option';
+                    optEl.textContent = opt;
+                    optEl.onclick = () => {
+                        Array.from(optionsDiv.children).forEach(c => {
+                            c.style.borderColor = '#ccc';
+                            c.style.backgroundColor = '#fcfcfc';
+                        });
+                        optEl.style.borderColor = '#0176d3';
+                        optEl.style.backgroundColor = '#eef4ff';
+                    };
+                    optionsDiv.appendChild(optEl);
+                });
+
+                const details = document.createElement('details');
+                details.innerHTML = `
+                    <summary>顯示答案與解析</summary>
+                    <div class="ans-content">
+                        <span class="correct-ans">Correct Answer: ${q.ans}</span>
+                        <span class="exp-title">Explanation:</span>
+                        ${q.exp}
+                    </div>
+                `;
+
+                card.appendChild(markWrapper);
+                card.appendChild(headerDiv);
+                card.appendChild(textDiv);
+                card.appendChild(optionsDiv);
+                card.appendChild(details);
+                container.appendChild(card);
+            });
+
+            if (visibleCount === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:#666;">
+                        <h3>👏 太棒了！目前沒有標記的錯題。</h3>
+                        <p>點擊上方「顯示全部」來複習所有題目。</p>
+                    </div>
+                `;
+            }
+        }
+
+        window.toggleWrong = function(id, event) {
+            event.stopPropagation();
+            const index = wrongIds.indexOf(id);
+            if (index === -1) {
+                wrongIds.push(id);
+            } else {
+                wrongIds.splice(index, 1);
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(wrongIds));
+            if (currentFilter === 'wrong') {
+                renderQuiz();
+            } else {
+                const wrapper = document.querySelector(`#card-${id} .wrong-mark-wrapper`);
+                const checkbox = document.querySelector(`#card-${id} .wrong-checkbox`);
+                if(index === -1) {
+                    wrapper.classList.add('is-wrong');
+                    checkbox.checked = true;
+                } else {
+                    wrapper.classList.remove('is-wrong');
+                    checkbox.checked = false;
+                }
+            }
+            updateCounts();
+        }
+
+        window.setFilter = function(mode) {
+            currentFilter = mode;
+            document.getElementById('btn-all').className = mode === 'all' ? 'btn-filter btn-all active' : 'btn-filter btn-all';
+            document.getElementById('btn-wrong').className = mode === 'wrong' ? 'btn-filter btn-wrong active' : 'btn-filter btn-wrong';
+            renderQuiz();
+        }
+
+        function updateCounts() {
+            document.getElementById('wrong-count').textContent = wrongIds.length;
+        }
+
+        // 重置功能
+        window.resetRecord = function() {
+            if (confirm('確定要清除本卷的所有錯題紀錄嗎？')) {
+                wrongIds = [];
+                localStorage.removeItem(STORAGE_KEY);
+                updateCounts();
+                renderQuiz();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
